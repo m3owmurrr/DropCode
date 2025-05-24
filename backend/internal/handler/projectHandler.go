@@ -20,7 +20,12 @@ func NewProjectHandler(serv service.Service) *ProjectHandler {
 
 func (ph *ProjectHandler) RunProjectHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	data := r.Body
+
+	data := &model.RunRequest{
+		SessionID: r.Header.Get("X-Session-ID"),
+		Language:  r.Header.Get("X-Language"),
+		Project:   r.Body,
+	}
 
 	runResp, err := ph.serv.RunProject(ctx, data)
 	if err != nil {

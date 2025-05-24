@@ -1,5 +1,13 @@
 package model
 
+import "io"
+
+type RunRequest struct {
+	SessionID string
+	Language  string
+	Project   io.Reader
+}
+
 type RunResponse struct {
 	RunID string `json:"run_id"`
 }

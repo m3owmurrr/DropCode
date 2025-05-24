@@ -24,7 +24,7 @@ func NewProjectService(repo repository.Repository, stor storage.Storage, brok br
 	}
 }
 
-func (ps *ProjectService) RunProject(ctx context.Context, data io.Reader) (*model.RunResponse, error) {
+func (ps *ProjectService) RunProject(ctx context.Context, data *model.RunRequest) (*model.RunResponse, error) {
 	return nil, nil
 }
 
