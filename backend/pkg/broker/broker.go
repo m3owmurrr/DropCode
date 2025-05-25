@@ -1,9 +1,13 @@
 package broker
 
-import "context"
+import (
+	"context"
+
+	"github.com/m3owmurrr/dropcode/backend/internal/model"
+)
 
 type Producer interface {
-	Publish(ctx context.Context) error
+	Publish(ctx context.Context, exchange, routingKey string, message *model.RunMessage) error
 }
 
 type Consumer interface {
