@@ -3,6 +3,7 @@ package config
 import "os"
 
 type Config struct {
+	Host   string
 	Port   string
 	S3     S3Config
 	Rabbit RabbitConfig
@@ -25,6 +26,7 @@ var Cfg *Config
 
 func Load() {
 	Cfg = &Config{
+		Host: getEnv("HOST", ""),
 		Port: getEnv("PORT", "8080"),
 		S3: S3Config{
 			Endpoint:   getEnv("S3_ENDPOINT", ""),
