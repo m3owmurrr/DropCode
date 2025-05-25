@@ -11,7 +11,7 @@ type Producer interface {
 }
 
 type Consumer interface {
-	Subscribe(ctx context.Context) error
+	Subscribe(ctx context.Context, queue string, handler func([]byte)) error
 }
 
 type Broker interface {

@@ -76,7 +76,36 @@ func (rb *RabbitBroker) Publish(ctx context.Context, exchange, routingKey string
 	return err
 }
 
-func (rb *RabbitBroker) Subscribe(ctx context.Context) error {
+func (rb *RabbitBroker) Subscribe(ctx context.Context, queue string, handler func([]byte)) error {
+	msgs, err := rb.subCh.Consume(
+		queue,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to register consumer: %w", err)
+	}
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				log.Println("consumer context done, stopping...")
+				return
+			case d, ok := <-msgs:
+				if !ok {
+					log.Println("consumer channel closed")
+					return
+				}
+				handler(d.Body)
+			}
+		}
+	}()
+
 	return nil
 }
 
