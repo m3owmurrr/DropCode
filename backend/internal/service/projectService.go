@@ -4,6 +4,8 @@ import (
 	"context"
 	"io"
 
+	"github.com/google/uuid"
+	"github.com/m3owmurrr/dropcode/backend/internal/config"
 	"github.com/m3owmurrr/dropcode/backend/internal/model"
 	"github.com/m3owmurrr/dropcode/backend/internal/repository"
 	"github.com/m3owmurrr/dropcode/backend/pkg/broker"
@@ -25,7 +27,22 @@ func NewProjectService(repo repository.Repository, stor storage.Storage, brok br
 }
 
 func (ps *ProjectService) RunProject(ctx context.Context, data *model.RunRequest) (*model.RunResponse, error) {
-	return nil, nil
+	runID := "run-" + uuid.New().String()
+
+	if err := ps.stor.Put(ctx, config.Cfg.S3.RunBucket, runID, data.Project); err != nil {
+		return nil, err
+	}
+
+	routingKey := "run." + data.Language
+	message := &model.RunMessage{RunId: runID}
+
+	if err := ps.brok.Publish(ctx, "runs", routingKey, message); err != nil {
+		return nil, err
+	}
+
+	resp := &model.RunResponse{RunID: runID}
+
+	return resp, nil
 }
 
 func (ps *ProjectService) SaveProject(ctx context.Context, data io.Reader) (*model.SaveResponse, error) {

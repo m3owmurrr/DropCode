@@ -76,6 +76,10 @@ func (rb *RabbitBroker) Publish(ctx context.Context, exchange, routingKey string
 	return err
 }
 
+func (rb *RabbitBroker) Subscribe(ctx context.Context) error {
+	return nil
+}
+
 func setup(ch *amqp.Channel) error {
 	if err := ch.ExchangeDeclare("runs", "topic", true, false, false, false, nil); err != nil {
 		return err
