@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/m3owmurrr/dropcode/backend/internal/model"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -44,7 +43,7 @@ func NewRabbitBroker(cfg RabbitConfig) (*RabbitBroker, error) {
 	return broker, nil
 }
 
-func (rb *RabbitBroker) Publish(ctx context.Context, exchange, routingKey string, message *model.RunMessage) error {
+func (rb *RabbitBroker) Publish(ctx context.Context, exchange, routingKey string, message any) error {
 	body, err := json.Marshal(message)
 	if err != nil {
 		return err
