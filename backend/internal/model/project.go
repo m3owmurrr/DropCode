@@ -1,11 +1,13 @@
 package model
 
-import "io"
+import (
+	"encoding/json"
+)
 
 type RunRequest struct {
-	SessionID string
-	Language  string
-	Project   io.Reader
+	SessionID string          `json:"session_id"`
+	Language  string          `json:"language"`
+	Project   json.RawMessage `json:"project"`
 }
 
 type RunResponse struct {

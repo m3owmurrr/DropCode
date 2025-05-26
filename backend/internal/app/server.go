@@ -17,12 +17,12 @@ import (
 func RunServer() {
 	config.Load()
 
-	broker, err := broker.NewRabbitBroker()
+	broker, err := broker.NewRabbitBroker(config.Cfg.Rabbit)
 	if err != nil {
 		log.Fatalf("can't initialize broker")
 	}
 
-	storage, err := storage.NewS3Storage()
+	storage, err := storage.NewS3Storage(config.Cfg.S3)
 	if err != nil {
 		log.Fatalf("can't initialize storage")
 	}

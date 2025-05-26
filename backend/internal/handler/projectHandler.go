@@ -19,15 +19,18 @@ func NewProjectHandler(serv service.Service) *ProjectHandler {
 }
 
 func (ph *ProjectHandler) RunProjectHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	var runReq *model.RunRequest
 
-	data := &model.RunRequest{
-		SessionID: r.Header.Get("X-Session-ID"),
-		Language:  r.Header.Get("X-Language"),
-		Project:   r.Body,
+	err := json.NewDecoder(r.Body).Decode(runReq)
+	if err != nil {
+		msg := "invalid JSON in request body"
+		writeError(w, http.StatusBadRequest, model.INVALID_JSON, msg)
+		return
 	}
+	defer r.Body.Close()
 
-	runResp, err := ph.serv.RunProject(ctx, data)
+	ctx := r.Context()
+	runResp, err := ph.serv.RunProject(ctx, runReq)
 	if err != nil {
 		// TODO: после реализации сервисного слоя
 		return

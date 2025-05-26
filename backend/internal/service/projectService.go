@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"io"
 
@@ -29,7 +30,7 @@ func NewProjectService(repo repository.Repository, stor storage.Storage, brok br
 func (ps *ProjectService) RunProject(ctx context.Context, data *model.RunRequest) (*model.RunResponse, error) {
 	runID := "run-" + uuid.New().String()
 
-	if err := ps.stor.Put(ctx, config.Cfg.S3.RunBucket, runID, data.Project); err != nil {
+	if err := ps.stor.Put(ctx, config.Cfg.S3.RunBucket, runID, bytes.NewReader(data.Project)); err != nil {
 		return nil, err
 	}
 
