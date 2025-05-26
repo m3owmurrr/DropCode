@@ -11,14 +11,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/m3owmurrr/dropcode/backend/pkg/config"
 )
 
 type S3Storage struct {
 	cl *s3.Client
 }
 
-func NewS3Storage(cfg config.S3Config) (*S3Storage, error) {
+func NewS3Storage(cfg S3Config) (*S3Storage, error) {
 	customResolver := aws.EndpointResolverFunc(func(service, region string) (aws.Endpoint, error) {
 		return aws.Endpoint{
 				URL:           cfg.Endpoint,

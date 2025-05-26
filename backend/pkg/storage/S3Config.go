@@ -1,4 +1,4 @@
-package config
+package storage
 
 import "os"
 
@@ -11,10 +11,6 @@ type S3Config struct {
 	SaveBucket string
 }
 
-type RabbitConfig struct {
-	URL string
-}
-
 func LoadS3Config() S3Config {
 	return S3Config{
 		Endpoint:   getEnv("S3_ENDPOINT", ""),
@@ -23,12 +19,6 @@ func LoadS3Config() S3Config {
 		Region:     getEnv("S3_REGION", ""),
 		RunBucket:  getEnv("S3_RUN_BUCKET", ""),
 		SaveBucket: getEnv("S3_SAVE_BUCKET", ""),
-	}
-}
-
-func LoadRabbitConfig() RabbitConfig {
-	return RabbitConfig{
-		URL: getEnv("RABBIT_URL", ""),
 	}
 }
 

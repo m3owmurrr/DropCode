@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/m3owmurrr/dropcode/backend/internal/model"
-	"github.com/m3owmurrr/dropcode/backend/pkg/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -17,7 +16,7 @@ type RabbitBroker struct {
 	subCh *amqp.Channel
 }
 
-func NewRabbitBroker(cfg config.RabbitConfig) (*RabbitBroker, error) {
+func NewRabbitBroker(cfg RabbitConfig) (*RabbitBroker, error) {
 	conn, err := amqp.Dial(cfg.URL)
 	if err != nil {
 		log.Printf("can't connect to rabbitmq: %v", err)

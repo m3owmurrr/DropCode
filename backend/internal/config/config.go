@@ -3,14 +3,15 @@ package config
 import (
 	"os"
 
-	"github.com/m3owmurrr/dropcode/backend/pkg/config"
+	"github.com/m3owmurrr/dropcode/backend/pkg/broker"
+	"github.com/m3owmurrr/dropcode/backend/pkg/storage"
 )
 
 type Config struct {
 	Host   string
 	Port   string
-	S3     config.S3Config
-	Rabbit config.RabbitConfig
+	S3     storage.S3Config
+	Rabbit broker.RabbitConfig
 }
 
 var Cfg *Config
@@ -19,8 +20,8 @@ func Load() {
 	Cfg = &Config{
 		Host:   getEnv("HOST", ""),
 		Port:   getEnv("PORT", "8080"),
-		S3:     config.LoadS3Config(),
-		Rabbit: config.LoadRabbitConfig(),
+		S3:     storage.LoadS3Config(),
+		Rabbit: broker.LoadRabbitConfig(),
 	}
 }
 
