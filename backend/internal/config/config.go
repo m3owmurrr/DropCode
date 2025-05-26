@@ -1,44 +1,26 @@
 package config
 
-import "os"
+import (
+	"os"
+
+	"github.com/m3owmurrr/dropcode/backend/pkg/config"
+)
 
 type Config struct {
 	Host   string
 	Port   string
-	S3     S3Config
-	Rabbit RabbitConfig
-}
-
-type S3Config struct {
-	Endpoint   string
-	AccessKey  string
-	SecretKey  string
-	Region     string
-	RunBucket  string
-	SaveBucket string
-}
-
-type RabbitConfig struct {
-	URL string
+	S3     config.S3Config
+	Rabbit config.RabbitConfig
 }
 
 var Cfg *Config
 
 func Load() {
 	Cfg = &Config{
-		Host: getEnv("HOST", ""),
-		Port: getEnv("PORT", "8080"),
-		S3: S3Config{
-			Endpoint:   getEnv("S3_ENDPOINT", ""),
-			AccessKey:  getEnv("S3_ACCESS_KEY", ""),
-			SecretKey:  getEnv("S3_SECRET_KEY", ""),
-			Region:     getEnv("S3_REGION", "us-east-1"),
-			RunBucket:  getEnv("S3_RUN_BUCKET", ""),
-			SaveBucket: getEnv("S3_SAVE_BUCKET", ""),
-		},
-		Rabbit: RabbitConfig{
-			URL: getEnv("RABBIT_URL", ""),
-		},
+		Host:   getEnv("HOST", ""),
+		Port:   getEnv("PORT", "8080"),
+		S3:     config.LoadS3Config(),
+		Rabbit: config.LoadRabbitConfig(),
 	}
 }
 

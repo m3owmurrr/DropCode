@@ -11,35 +11,35 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/m3owmurrr/dropcode/backend/internal/config"
+	"github.com/m3owmurrr/dropcode/backend/pkg/config"
 )
 
 type S3Storage struct {
 	cl *s3.Client
 }
 
-func NewS3Storage() (*S3Storage, error) {
+func NewS3Storage(cfg config.S3Config) (*S3Storage, error) {
 	customResolver := aws.EndpointResolverFunc(func(service, region string) (aws.Endpoint, error) {
 		return aws.Endpoint{
-				URL:           config.Cfg.S3.Endpoint,
-				SigningRegion: config.Cfg.S3.Region,
+				URL:           cfg.Endpoint,
+				SigningRegion: cfg.Region,
 			},
 			nil
 	})
 
 	ctx := context.Background()
-	cfg, err := awsConfig.LoadDefaultConfig(ctx,
-		awsConfig.WithRegion(config.Cfg.S3.Region),
+	awsCfg, err := awsConfig.LoadDefaultConfig(ctx,
+		awsConfig.WithRegion(cfg.Region),
 		awsConfig.WithEndpointResolver(customResolver),
 		awsConfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			config.Cfg.S3.AccessKey, config.Cfg.S3.SecretKey, "",
+			cfg.AccessKey, cfg.SecretKey, "",
 		)),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+	client := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
 		o.UsePathStyle = true
 	})
 
