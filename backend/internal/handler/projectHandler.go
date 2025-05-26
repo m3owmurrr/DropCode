@@ -19,9 +19,9 @@ func NewProjectHandler(serv service.Service) *ProjectHandler {
 }
 
 func (ph *ProjectHandler) RunProjectHandler(w http.ResponseWriter, r *http.Request) {
-	var runReq *model.RunRequest
+	var runReq model.RunRequest
 
-	err := json.NewDecoder(r.Body).Decode(runReq)
+	err := json.NewDecoder(r.Body).Decode(&runReq)
 	if err != nil {
 		msg := "invalid JSON in request body"
 		writeError(w, http.StatusBadRequest, model.INVALID_JSON, msg)
@@ -30,7 +30,7 @@ func (ph *ProjectHandler) RunProjectHandler(w http.ResponseWriter, r *http.Reque
 	defer r.Body.Close()
 
 	ctx := r.Context()
-	runResp, err := ph.serv.RunProject(ctx, runReq)
+	runResp, err := ph.serv.RunProject(ctx, &runReq)
 	if err != nil {
 		// TODO: после реализации сервисного слоя
 		return
