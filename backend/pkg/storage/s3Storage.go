@@ -77,3 +77,15 @@ func (s3s *S3Storage) Get(ctx context.Context, bucket string, key string) (io.Re
 
 	return data.Body, nil
 }
+
+func (s3s *S3Storage) Delete(ctx context.Context, bucket, key string) error {
+	_, err := s3s.cl.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
