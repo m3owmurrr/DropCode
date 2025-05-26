@@ -48,6 +48,36 @@ func (ph *ProjectHandler) RunProjectHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(resp)
 }
 
+func (ph *ProjectHandler) SaveProjectHandler(w http.ResponseWriter, r *http.Request) {
+	var saveReq model.SaveRequest
+
+	err := json.NewDecoder(r.Body).Decode(&saveReq)
+	if err != nil {
+		msg := "invalid JSON in request body"
+		writeError(w, http.StatusBadRequest, model.INVALID_JSON, msg)
+		return
+	}
+	defer r.Body.Close()
+
+	ctx := r.Context()
+	runResp, err := ph.serv.SaveProject(ctx, &saveReq)
+	if err != nil {
+		// TODO: после реализации сервисного слоя
+		return
+	}
+
+	resp, err := json.Marshal(runResp)
+	if err != nil {
+		msg := "failed to encode response"
+		writeError(w, http.StatusInternalServerError, model.INTERNAL_ERROR, msg)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	w.Write(resp)
+}
+
 func writeError(w http.ResponseWriter, statusCode int, errCode, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)

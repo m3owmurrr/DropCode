@@ -36,6 +36,7 @@ func RunServer() {
 
 	subRouter := router.PathPrefix("/api/v1").Subrouter()
 	subRouter.HandleFunc("/projects/run", projHandler.RunProjectHandler).Methods(http.MethodPost)
+	subRouter.HandleFunc("/projects/save", projHandler.SaveProjectHandler).Methods(http.MethodPost)
 
 	address := fmt.Sprintf("%s:%s", config.Cfg.Host, config.Cfg.Port)
 	server := http.Server{

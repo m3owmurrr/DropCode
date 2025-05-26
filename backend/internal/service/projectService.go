@@ -3,6 +3,8 @@ package service
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/google/uuid"
@@ -27,14 +29,14 @@ func NewProjectService(repo repository.Repository, stor storage.Storage, brok br
 	}
 }
 
-func (ps *ProjectService) RunProject(ctx context.Context, data *model.RunRequest) (*model.RunResponse, error) {
-	runID := "run-" + uuid.New().String()
+func (ps *ProjectService) RunProject(ctx context.Context, req *model.RunRequest) (*model.RunResponse, error) {
+	runID := fmt.Sprintf("run-%v", uuid.New().String())
 
-	if err := ps.stor.Put(ctx, config.Cfg.S3.RunBucket, runID, bytes.NewReader(data.Project)); err != nil {
+	if err := ps.stor.Put(ctx, config.Cfg.S3.RunBucket, runID, bytes.NewReader(req.Project)); err != nil {
 		return nil, err
 	}
 
-	routingKey := "run." + data.Language
+	routingKey := "run." + req.Language
 	message := &model.RunMessage{RunId: runID}
 
 	if err := ps.brok.Publish(ctx, "runs", routingKey, message); err != nil {
@@ -46,8 +48,23 @@ func (ps *ProjectService) RunProject(ctx context.Context, data *model.RunRequest
 	return resp, nil
 }
 
-func (ps *ProjectService) SaveProject(ctx context.Context, data io.Reader) (*model.SaveResponse, error) {
-	return nil, nil
+func (ps *ProjectService) SaveProject(ctx context.Context, req *model.SaveRequest) (*model.SaveResponse, error) {
+	projectID := fmt.Sprintf("project-%v", uuid.New().String())
+
+	saveProject := req.ToSaveProject()
+
+	data, err := json.Marshal(saveProject)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ps.stor.Put(ctx, config.Cfg.S3.SaveBucket, projectID, bytes.NewReader(data)); err != nil {
+		return nil, err
+	}
+
+	resp := &model.SaveResponse{ProjectID: projectID}
+
+	return resp, nil
 }
 
 func (ps *ProjectService) GetProject(ctx context.Context, id string) (io.Reader, error) {
